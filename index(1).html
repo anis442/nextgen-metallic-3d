@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXTGEN METALLIC 3D | Luxury Epoxy Flooring</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0b0b;color:#f5f0e7;font-family:Arial,sans-serif}
+header{padding:18px 6%;background:#111;border-bottom:1px solid #c9a45c;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font: bold 23px Georgia,serif;color:#e6c681}
+nav a{color:white;text-decoration:none;margin:0 9px;font-size:13px}
+.hero{padding:156px 4%;background:linear-gradient(90deg,#000000,#36295577),url('100.png') center/cover}
+.hero h1{font:clamp(38px,6vw,68px) Georgia,serif;margin:10px 0;color:#f0d69d}
+.hero p{max-width:560px;line-height:1.8}
+.btn{background:#d5ad65;color:#111;border:0;padding:12px 18px;cursor:pointer;font-weight:bold;text-decoration:none;display:inline-block;margin-top:12px}
+section{padding:55px 6%}
+.heading{text-align:center;font:34px Georgia,serif;color:#e6c681}
+.sub{text-align:center;color:#bbb;margin-bottom:30px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{border:1px solid #443822;background:#141414;cursor:pointer;transition:.2s}
+.card:hover{border-color:#e6c681;transform:translateY(-3px)}
+.card img{width:100%;height:220px;object-fit:cover;display:block}
+.card h3{padding:0 14px;margin-bottom:5px}
+.card p{padding:0 14px;color:#c7bba7;font-size:13px}
+.card button{margin:0 14px 16px;padding:9px 13px;background:transparent;border:1px solid #d5ad65;color:#e6c681;cursor:pointer}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.feature{border:1px solid #443822;padding:22px;text-align:center}
+.feature h3{color:#e6c681}
+#contact{background:#121212}
+#contact p{line-height:1.8}
+footer{padding:25px;text-align:center;border-top:1px solid #c9a45c;color:#bbb}
+.modal{display:none;position:fixed;inset:0;overflow:auto;background:#000e;z-index:10;padding:18px}
+.modal-content{max-width:850px;margin:20px auto;background:#151515;border:1px solid #d5ad65;padding:22px;position:relative}
+.close{position:absolute;right:12px;top:10px;background:#222;color:white;border:1px solid #d5ad65;padding:8px 13px;cursor:pointer}
+#mainPhoto{width:100%;height:350px;object-fit:cover}
+.thumbs{display:flex;gap:9px;overflow:auto;margin:10px 0}
+.thumbs img{width:100px;height:75px;object-fit:cover;cursor:pointer;border:2px solid transparent}
+.thumbs img:hover{border-color:#e6c681}
+#videoFrame{width:100%;aspect-ratio:16/9;border:0;background:#222}
+.detail-text{color:#ccc;line-height:1.7}
+.whatsapp{position:fixed;bottom:18px;right:15px;background:#25d366;color:#071b0d;text-decoration:none;padding:13px 17px;border-radius:28px;font-weight:bold;z-index:5}
+@media(max-width:750px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.features{grid-template-columns:1fr}.hero{padding:65px 6%}nav{width:100%}nav a{margin:0 5px}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.card img{height:240px}header{align-items:flex-start;flex-direction:column}nav a{font-size:12px;margin-right:10px}.modal-content{padding:14px}#mainPhoto{height:260px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">✧ NEXTGEN METALLIC 3D</div>
+  <nav>
+    <a href="#home">HOME</a>
+    <a href="#collection">DESIGNS</a>
+    <a href="#contact">CONTACT</a>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <p style="color:#e6c681;letter-spacing:3px">PREMIUM • MODERN • LUXURY</p>
+  <h1>Turn Your Floor<br>Into Art.</h1>
+  <p>Discover luxury metallic epoxy and 3D-inspired flooring concepts for homes, offices, showrooms and commercial spaces.</p>
+  <a class="btn" href="#collection">EXPLORE DESIGNS ↓</a>
+</section>
+
+<section id="collection">
+  <h2 class="heading">Our Premium Collection</h2>
+  <p class="sub">15 unique design concepts. Click any design to explore its gallery and details.</p>
+  <div class="grid" id="productGrid"></div>
+</section>
+
+<section>
+  <h2 class="heading">Why Choose NextGen?</h2>
+  <div class="features">
+    <div class="feature"><h3>✧ Premium Look</h3><p>Elegant metallic-inspired finishes.</p></div>
+    <div class="feature"><h3>◇ Custom Design</h3><p>Discuss your preferred colors and patterns.</p></div>
+    <div class="feature"><h3>⌂ Personal Service</h3><p>Contact us for a project-specific quotation.</p></div>
+  </div>
+</section>
+
+<section id="contact">
+  <h2 class="heading">Contact Us</h2>
+  <p style="text-align:center">Ready to transform your floor? Contact us to discuss your project.</p>
+  <p style="text-align:center;color:#e6c681">Phone / WhatsApp: <span id="phoneText">Add your number in the code</span></p>
+  <p style="text-align:center">Tell us about your flooring project and preferred design.</p>
+  <p style="text-align:center"><a class="btn" id="contactBtn" href="#contact">CONTACT ON WHATSAPP</a></p>
+</section>
+
+<footer>© <span id="year"></span> NEXTGEN METALLIC 3D. All rights reserved.</footer>
+<a class="whatsapp" id="waFloat" href="#contact">WhatsApp ↗</a>
+
+<div class="modal" id="detailsModal">
+  <div class="modal-content">
+    <button class="close" onclick="closeDetails()">CLOSE ✕</button>
+    <h2 id="detailTitle" class="heading"></h2>
+    <img id="mainPhoto" src="" alt="Epoxy design">
+    <div class="thumbs" id="thumbs"></div>
+    <h3 style="color:#e6c681">Design Details</h3>
+    <p id="detailDesc" class="detail-text"></p>
+    <p class="detail-text">Finish: Metallic-inspired luxury concept<br>Use: Residential and commercial design inspiration<br>Price: Contact us for a project-specific quote.</p>
+    <a class="btn" id="enquireBtn" href="#contact">SIR BUY NOW</a>
+  </div>
+</div>
+
+<script>
+// Replace this with your Indian mobile number.
+// Example: const CONTACT_NUMBER = "918637850799";
+const CONTACT_NUMBER = "918637850799";
+
+// Different names and image groups for 15 design concepts.
+// These are online interior reference photos, not verified epoxy project photos.
+const designs = [
+ {name:"Ocean Blue",desc:"Deep blue ocean-inspired visual concept.",imgs:["photo-rajaji.png","000.png","999.png"]},
+ {name:"Galaxy Black",desc:"Dark dramatic metallic-inspired design.",imgs:["123.png","000.png","999.png"]},
+ {name:"Golden Marble",desc:"Warm gold and ivory marble-inspired concept.",imgs:["999.png","123.png","000.png"]},
+ {name:"Emerald Green",desc:"Rich green-inspired luxury color concept.",imgs:["888.png","photo-rajaji.png","123.png"]},
+ {name:"Ruby Red",desc:"Bold red-inspired statement concept.",imgs:["777.png","999.png","000.png"]},
+ {name:"Silver Wave",desc:"Cool silver and grey contemporary concept.",imgs:["666.png","777.png","999.png"]},
+ {name:"Purple Dream",desc:"Violet pearl-inspired design concept.",imgs:["555.png","000.png","photo-rajaji.png"]},
+ {name:"White Pearl",desc:"Bright, light pearl-inspired visual concept.",imgs:["444.png","555.png","999.png"]},
+ {name:"Copper Flow",desc:"Copper and bronze-inspired warm concept.",imgs:["333.png","123.png","999.png"]},
+ {name:"Fire & Ice",desc:"Contrasting warm and cool color concept.",imgs:["222.png","000.png","555.png"]},
+ {name:"Forest Green",desc:"Nature-inspired deep green concept.",imgs:["111.png","222.png","444.png"]},
+];
+
+function imageUrl(id, width = 900) {
+  if (id.endsWith(".png") || id.endsWith(".jpg") || id.endsWith(".jpeg")) {
+    return id;
+  }
+
+  return "https://images.unsplash.com/" + id +
+    "?auto=format&fit=crop&w=" + width + "&q=85";
+}
+
+const grid=document.getElementById("productGrid");
+
+designs.forEach((item,index)=>{
+ const card=document.createElement("article");
+ card.className="card";
+ card.innerHTML=`
+ <img src="${imageUrl(item.imgs[0])}" alt="${item.name} design" loading="lazy">
+ <h3>${String(index+1).padStart(2,"0")}. ${item.name}</h3>
+ <p>${item.desc}</p>
+ <button type="button">VIEW DETAILS ↗</button>`;
+ card.addEventListener("click",()=>openDetails(index));grid.appendChild(card);
+});
+
+function openDetails(index){
+ const item=designs[index];
+ document.getElementById("detailTitle").textContent=item.name;
+ document.getElementById("detailDesc").textContent=item.desc;
+ const main=document.getElementById("mainPhoto");
+ const thumbs=document.getElementById("thumbs");
+ thumbs.innerHTML="";
+
+ item.imgs.forEach((id,i)=>{
+   const url=imageUrl(id,1200);
+   const thumb=document.createElement("img");
+   thumb.src=imageUrl(id,250);
+   thumb.alt=item.name+" gallery photo "+(i+1);
+   thumb.onclick=()=>{main.src=url};
+   thumbs.appendChild(thumb);
+ });
+ main.src=imageUrl(item.imgs[0],1200);
+
+ const message=encodeURIComponent("Hello, I am interested in the "+item.name+" design from NextGen Metallic 3D. Please share details and a quotation.");
+ document.getElementById("enquireBtn").href=whatsappLink(message);
+
+ document.getElementById("detailsModal").style.display="block";
+ document.body.style.overflow="hidden";
+}
+
+function closeDetails(){
+ document.getElementById("detailsModal").style.display="none";
+ document.getElementById("videoFrame").src="";
+ document.body.style.overflow="auto";
+}
+
+document.getElementById("detailsModal").addEventListener("click",function(e){
+ if(e.target===this)closeDetails();
+});
+
+function whatsappLink(message=""){
+ if(!/^91\d{10}$/.test(CONTACT_NUMBER))return "#contact";
+ return "https://wa.me/"+CONTACT_NUMBER+(message?"?text="+message:"");
+}
+
+function setupContact(){
+ const valid=/^91\d{10}$/.test(CONTACT_NUMBER);
+ document.getElementById("phoneText").textContent=valid?"+"+CONTACT_NUMBER:"Please add your number in the code";
+ document.getElementById("contactBtn").href=whatsappLink();
+ document.getElementById("waFloat").href=whatsappLink();
+}
+setupContact();
+document.getElementById("year").textContent=new Date().getFullYear();
+function buyDesign(index) {
+  const design = designs[index];
+
+  const message = encodeURIComponent(
+    "Hello NextGen Metallic 3D! I am interested in " +
+    design.name +
+    ". Please share the price and purchase details."
+  );
+
+  const phone = CONTACT_NUMBER.replace(/\D/g, "");
+
+  if (!/^91\d{10}$/.test(phone)) {
+    alert("8637850799.");
+    return;
+  }
+
+  window.open(
+    "https://wa.me/" + phone + "?text=" + message,
+    "_blank"
+  );
+}
+</script>
+
+<script>
+const SUPABASE_URL = "https://jsxsetorcrljzxenfccq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_qi_AiLI3_USdYdkOqMr2iA_NRYE_gXQ";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+console.log("NEXTGEN Supabase Connected");
+</script>
+</body>
+</html>
+
