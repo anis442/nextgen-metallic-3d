@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXTGEN METALLIC 3D | Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:#f5f0e7;font-family:Arial}
+header{padding:20px;background:#080808;border-bottom:2px solid #c9a45c}
+h1{color:#d6b46a;font-size:23px}
+main{max-width:850px;margin:25px auto;padding:15px}
+.panel{background:#1c1c1c;padding:20px;border-radius:10px;margin-bottom:20px}
+input,button{width:100%;padding:12px;margin:7px 0;border-radius:5px}
+input{background:#292929;color:white;border:1px solid #555}
+button{background:#c9a45c;color:#111;border:0;font-weight:bold;cursor:pointer}
+.secondary{background:#444;color:white}
+.product{border:1px solid #444;padding:14px;margin:12px 0;border-radius:8px}
+.product img{width:100%;max-height:230px;object-fit:cover}
+a{color:#e6c878}
+#status{white-space:pre-wrap;color:#e6c878}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+<h1>NEXTGEN METALLIC 3D</h1>
+<p>Admin Dashboard</p>
+</header>
+
+<main>
+<div class="panel" id="loginPanel">
+<h2>Admin Login</h2>
+<input id="email" type="email" placeholder="Admin email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">LOGIN</button>
+<p id="loginStatus"></p>
+</div>
+
+<div id="dashboard" class="hidden">
+<div class="panel">
+<h2>Add / Edit Design</h2>
+<input id="pid" type="hidden">
+<input id="name" placeholder="Design name">
+<input id="price" type="number" min="0" placeholder="Price in INR">
+<input id="photo" type="url" placeholder="Image URL (https://...)">
+<input id="video" type="url" placeholder="Video URL (optional)">
+<button onclick="saveProduct()">SAVE DESIGN</button>
+<button class="secondary" onclick="clearForm()">CLEAR FORM</button>
+<button class="secondary" onclick="logout()">LOG OUT</button>
+<p id="status"></p>
+</div>
+
+<div class="panel">
+<h2>All Designs</h2>
+<div id="products">Loading...</div>
+</div>
+</div>
+</main>
+
+<script>
+const SUPABASE_URL = "https://jsxsetorcrljzxenfccq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_qi_AiLI3_USdYdkOqMr2iA_NRYE_gXQ";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const $ = id => document.getElementById(id);
+
+async function login(){
+  $("loginStatus").textContent = "Checking login...";
+  const {data,error} = await db.auth.signInWithPassword({
+    email:$("email").value.trim(),
+    password:$("password").value
+  });
+
+  if(error){
+    $("loginStatus").textContent = error.message;
+    return;
+  }
+
+  await checkAdmin();
+}
+
+async function checkAdmin(){
+  const {data:{user}} = await db.auth.getUser();
+
+  if(!user){
+    $("loginPanel").classList.remove("hidden");
+    $("dashboard").classList.add("hidden");
+    return;
+  }
+
+  // Database policies must restrict write access
+  // to the authorized admin account.
+  $("loginPanel").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+  await loadProducts();
+}
+
+async function loadProducts(){
+  $("products").textContent = "Loading designs...";
+
+  const {data,error} = await db
+    .from("products")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    $("products").textContent = error.message;
+    return;
+  }
+
+  if(!data.length){
+    $("products").textContent = "No designs added yet.";
+    return;
+  }
+
+  $("products").innerHTML = "";
+
+  data.forEach(p=>{
+    const card = document.createElement("div");
+    card.className = "product";
+
+    const title = document.createElement("h3");
+    title.textContent = p.title;
+
+    const price = document.createElement("p");
+    price.textContent = "₹" + p.price;
+
+    card.append(title,price);
+
+    if(p.image_url){
+      const img = document.createElement("img");
+      img.src = p.image_url;
+      img.alt = p.title;
+      img.loading = "lazy";
+      card.appendChild(img);
+    }
+
+    if(p.video_url){
+      const link = document.createElement("a");
+      link.href = p.video_url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Open video";
+      card.appendChild(link);
+    }
+
+    const edit = document.createElement("button");
+    edit.textContent = "EDIT";
+    edit.onclick = ()=>{
+      $("pid").value = p.id;
+      $("name").value = p.title || "";
+      $("price").value = p.price ?? "";
+      $("photo").value = p.image_url || "";
+      $("video").value = p.video_url || "";
+      window.scrollTo({top:0,behavior:"smooth"});
+    };
+
+    const del = document.createElement("button");
+    del.textContent = "DELETE";
+    del.className = "secondary";
+    del.onclick = ()=>deleteProduct(p.id);
+
+    card.append(edit,del);
+    $("products").appendChild(card);
+  });
+}
+
+async function saveProduct(){
+  const title = $("name").value.trim();
+  const price = Number($("price").value);
+  const image_url = $("photo").value.trim();
+  const video_url = $("video").value.trim();
+  const id = $("pid").value;
+
+  if(!title || $("price").value === "" ||
+     !Number.isFinite(price) || price < 0){
+    $("status").textContent = "Enter a design name and valid price.";
+    return;
+  }
+
+  if(!image_url){
+    $("status").textContent = "Enter an image URL.";
+    return;
+  }
+
+  for(const value of [image_url,video_url]){
+    if(value && !/^https?:\/\//i.test(value)){
+      $("status").textContent = "Image and video must use HTTP or HTTPS URLs.";
+      return;
+    }
+  }
+
+  const item = {title,price,image_url,video_url:video_url || null};
+  $("status").textContent = "Saving...";
+
+  let result;
+
+  if(id){
+    result = await db.from("products").update(item).eq("id",id);
+  }else{
+    result = await db.from("products").insert(item);
+  }
+
+  if(result.error){
+    $("status").textContent = result.error.message;
+    return;
+  }
+
+  $("status").textContent = "Saved successfully.";
+  clearForm();
+  await loadProducts();
+}
+
+async function deleteProduct(id){
+  if(!confirm("Delete this design?")) return;
+
+  const {error} = await db.from("products").delete().eq("id",id);
+
+  if(error){
+    $("status").textContent = error.message;
+    return;
+  }
+
+  $("status").textContent = "Design deleted.";
+  await loadProducts();
+}
+
+function clearForm(){
+  $("pid").value = "";
+  $("name").value = "";
+  $("price").value = "";
+  $("photo").value = "";
+  $("video").value = "";
+}
+
+async function logout(){
+  await db.auth.signOut();
+  $("dashboard").classList.add("hidden");
+  $("loginPanel").classList.remove("hidden");
+  $("loginStatus").textContent = "Logged out.";
+}
+
+db.auth.onAuthStateChange((event,session)=>{
+  if(event === "SIGNED_OUT"){
+    $("dashboard").classList.add("hidden");
+    $("loginPanel").classList.remove("hidden");
+  }
+});
+
+checkAdmin();
+</script>
+</body>
+</html>
